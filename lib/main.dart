@@ -83,9 +83,18 @@ class Transferencia {
   final int accountNum;
 
   Transferencia(this.value, this.accountNum);
+
+  @override
+  String toString() {
+    return 'Transferencia{value: $value, accountNum: $accountNum}';
+  }
 }
 
 class FormTransferenciaScreen extends StatelessWidget {
+  final TextEditingController _controladorCampoNumConta =
+      TextEditingController();
+  final TextEditingController _controladorCampoValor = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,37 +104,60 @@ class FormTransferenciaScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              style: TextStyle(fontSize: 20.0),
-              keyboardType: TextInputType.number,
-              decoration:
-                  InputDecoration(labelText: 'Número Conta', hintText: '0000'),
-            ),
+          Editor(
+            controller: _controladorCampoNumConta,
+            label: 'Número da Conta',
+            hint: '0000',
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              style: TextStyle(fontSize: 20.0),
-              decoration: InputDecoration(
-                labelText: 'Valor',
-                hintText: '0.00',
-                icon: Icon(Icons.monetization_on),
-              ),
-            ),
+          Editor(
+            controller: _controladorCampoValor,
+            label: 'Valor',
+            hint: '0.00',
+            icon: Icons.monetization_on,
           ),
           ElevatedButton(
-            onPressed: (){
-              debugPrint('teste click hehe');
-            },
+            onPressed: () => _createTransferencia(),
             child: Text('Confirmar'),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.blue)
-            ),
+                backgroundColor: MaterialStateProperty.all(Colors.blue)),
           )
         ],
+      ),
+    );
+  }
+
+  void _createTransferencia() {
+    final int? numConta = int.tryParse(_controladorCampoNumConta.text);
+    final double? valor = double.tryParse(_controladorCampoValor.text);
+
+    if (numConta != null && valor != null) {
+      final newTransferencia = Transferencia(valor, numConta);
+      debugPrint('$newTransferencia');
+    }
+  }
+}
+
+class Editor extends StatelessWidget {
+  final TextEditingController? controller;
+  final String? label;
+  final String? hint;
+  final IconData? icon;
+
+  Editor({this.controller, this.label, this.hint, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        controller: controller,
+        style: TextStyle(fontSize: 20.0),
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          icon: icon != null ? Icon(Icons.monetization_on) : null,
+        ),
       ),
     );
   }
